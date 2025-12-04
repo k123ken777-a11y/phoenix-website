@@ -1,11 +1,11 @@
 const CACHE_NAME = 'memory-videos-cache-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/videos.html',
-  '/style.css',
-  '/Team Logo.png',
-  '/Team Logo.png'
+  '/phoenix-website/',
+  '/phoenix-website/index.html',
+  '/phoenix-website/videos.html',
+  '/phoenix-website/style.css',
+  '/phoenix-website/TeamLogo192.png',
+  '/phoenix-website/TeamLogo512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -21,3 +21,4 @@ self.addEventListener('fetch', event => {
       .then(response => response || fetch(event.request))
   );
 });
+
