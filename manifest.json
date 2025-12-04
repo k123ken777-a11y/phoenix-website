@@ -1,6 +1,6 @@
 {
-  "name": "思い出の動画",
-  "short_name": "思い出動画",
+  "name": "2025PHXHISTORY",
+  "short_name": "PHX HISTORY",
   "start_url": "/phoenix-website/index.html",
   "display": "standalone",
   "background_color": "#000000",
@@ -19,3 +19,4 @@
 ]
 
 }
+
