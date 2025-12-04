@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow">
 <title>HAMAMATSU PHOENIX BASKETBALL CLUB</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F9D65C">
+
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -68,5 +71,13 @@
   </footer>
 </body>
 </html>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log('Service Worker登録成功'))
+      .catch(err => console.log('Service Worker登録失敗', err));
+  }
+</script>
+
 
 
