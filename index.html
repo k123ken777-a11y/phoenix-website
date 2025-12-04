@@ -73,11 +73,13 @@
 </html>
 <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
+    navigator.serviceWorker.register('/phoenix-website/sw.js')
       .then(() => console.log('Service Worker登録成功'))
       .catch(err => console.log('Service Worker登録失敗', err));
   }
 </script>
+
+
 
 
 
