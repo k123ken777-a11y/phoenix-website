@@ -1,141 +1,156 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>思い出の動画</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #000;
-      color: #F9D65C;
-      margin: 0;
-      padding: 0;
-    }
-    h1 {
-      text-align: center;
-      padding: 20px;
-      font-size: 30px;
-      font-weight: bold;
-      color: #F9D65C;
-      text-shadow: 0 0 10px rgba(249,214,92,0.9);
-    }
-    .section-title {
-      font-size: 22px;
-      margin: 30px 0 10px;
-      padding-left: 15px;
-      border-left: 5px solid #F9D65C;
-      font-weight: bold;
-      text-shadow: 0 0 6px rgba(249,214,92,0.7);
-    }
-    .card-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 18px;
-      padding: 10px 16px 50px;
-    }
-    .card {
-      background: linear-gradient(180deg, #111 0%, #000 100%);
-      border: 1px solid rgba(249,214,92,0.25);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(249,214,92,0.25);
-      transition: transform .25s, box-shadow .25s;
-      position: relative;
-      text-decoration: none;
-      color: #F9D65C;
-    }
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 18px rgba(249,214,92,0.5);
-    }
-    .thumb {
-      width: 100%;
-      height: 160px;
-      background-size: cover;
-      background-position: center;
-      border-bottom: 1px solid rgba(249,214,92,0.2);
-    }
-    .card-content {
-      padding: 12px;
-      text-align: left;
-    }
-    .match-title {
-      font-size: 17px;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-    .date, .score {
-      font-size: 14px;
-      opacity: .9;
-    }
-    .badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: bold;
-      border-radius: 10px;
-      border: 1px solid rgba(0,0,0,0.4);
-      text-shadow: 0 0 5px rgba(0,0,0,0.8);
-    }
-    .win {
-      background: linear-gradient(135deg, #FFD43B, #E7B700);
-      color: #000;
-    }
-    .lose {
-      background: linear-gradient(135deg, #D32F2F, #8A0000);
-      color: #fff;
-    }
-    .back {
-      text-align: center;
-      margin: 40px 0;
-    }
-    .back a {
-      color: #F9D65C;
-      font-size: 18px;
-      text-decoration: none;
-      font-weight: bold;
-      text-shadow: 0 0 6px rgba(249,214,92,0.7);
-    }
-    
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #000;
+    color: #F9D65C;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1 {
+    text-align: center;
+    padding: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(249,214,92,0.9);
+  }
+
+  .section-title {
+    font-size: 22px;
+    margin: 30px 0 10px;
+    padding-left: 15px;
+    border-left: 5px solid #F9D65C;
+    font-weight: bold;
+    text-shadow: 0 0 6px rgba(249,214,92,0.7);
+  }
+
+  .card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+    padding: 10px 16px 50px;
+  }
+
+  /* ===== Card ===== */
+  .card {
+    position: relative;
+    background: linear-gradient(180deg, #111 0%, #000 100%);
+    border: 1px solid rgba(249,214,92,0.25);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(249,214,92,0.25);
+    transition: transform .25s, box-shadow .25s;
+    color: #ffffff;
+  }
+
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 18px rgba(249,214,92,0.5);
+  }
+
+  .card-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .thumb {
+    width: 100%;
+    height: 160px;
+    background-size: cover;
+    background-position: center;
+    border-bottom: 1px solid rgba(249,214,92,0.2);
+  }
+
+  .card-content {
+    padding: 12px;
+    text-align: left;
+  }
+
+  .match-title {
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  .date, .score {
+    font-size: 14px;
+    opacity: .9;
+  }
+
+  /* ===== Badge ===== */
+  .badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.4);
+    text-shadow: 0 0 5px rgba(0,0,0,0.8);
+  }
+
+  .win {
+    background: linear-gradient(135deg, #FFD43B, #E7B700);
+    color: #000;
+  }
+
+  .lose {
+    background: linear-gradient(135deg, #D32F2F, #8A0000);
+    color: #fff;
+  }
+
+  /* ===== Score Button ===== */
+  .score-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #000;
+    background: linear-gradient(135deg, #FFD43B, #E7B700);
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(249,214,92,0.6);
+    text-shadow: 0 0 3px rgba(255,255,255,0.6);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.25s ease;
+    z-index: 2;
+  }
+
+  .card:hover .score-btn {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===== Back ===== */
+  .back {
+    text-align: center;
+    margin: 40px 0;
+  }
+
+  .back a {
+    color: #F9D65C;
+    font-size: 18px;
+    text-decoration: none;
+    font-weight: bold;
+    text-shadow: 0 0 6px rgba(249,214,92,0.7);
+  }
+
+  /* ===== Mobile ===== */
+  @media (max-width: 768px) {
     .score-btn {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: bold;
-      color: #000;
-      background: linear-gradient(135deg, #FFD43B, #E7B700);
-      border-radius: 20px;
-      box-shadow: 0 0 10px rgba(249,214,92,0.6);
-      text-shadow: 0 0 3px rgba(255,255,255,0.6);
-      opacity: 0;
-      transform: translateY(6px);
-      transition: all 0.25s ease;
-      z-index: 2;
+      opacity: 1;
+      transform: none;
     }
+  }
+</style>
 
-    /* ホバー時に表示 */
-    .card:hover .score-btn {
-     opacity: 1;
-     transform: translateY(0);
-    }
-    .card {
-     position: relative;
-    }
-
-    .card-link {
-     display: block;
-     color: inherit;
-     text-decoration: none;
-    }
-
-   
-  </style>
-</head>
 <body>
 
   <h1>思い出の動画</h1>
