@@ -5,13 +5,198 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>思い出の動画</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: 'Noto Sans JP', 'Arial', sans-serif;
       background: #000;
       color: #ffffff;
       margin: 0;
       padding: 0;
+      padding-top: 80px; /* BGMバー分のスペース */
     }
+
+    /* ===== BGM固定バー ===== */
+    #bgm-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: linear-gradient(90deg, #0a0a0a 0%, #1a1500 50%, #0a0a0a 100%);
+      border-bottom: 1px solid rgba(249,214,92,0.35);
+      box-shadow: 0 2px 20px rgba(249,214,92,0.15);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 20px;
+      height: 64px;
+    }
+
+    /* 音楽アイコン＋タイトル */
+    #bgm-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    #bgm-note {
+      font-size: 20px;
+      animation: noteFloat 2.2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes noteFloat {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-4px) rotate(5deg); }
+    }
+
+    #bgm-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #F9D65C;
+      text-shadow: 0 0 8px rgba(249,214,92,0.6);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #bgm-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 1px;
+    }
+
+    /* 再生コントロール */
+    #bgm-play-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid rgba(249,214,92,0.7);
+      background: transparent;
+      color: #F9D65C;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    #bgm-play-btn:hover {
+      background: rgba(249,214,92,0.15);
+      box-shadow: 0 0 14px rgba(249,214,92,0.5);
+    }
+
+    #bgm-play-btn.playing {
+      background: rgba(249,214,92,0.12);
+    }
+
+    /* シークバー */
+    #bgm-seek-wrap {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 80px;
+    }
+
+    #bgm-seek {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.15);
+      outline: none;
+      cursor: pointer;
+    }
+
+    #bgm-seek::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #F9D65C;
+      box-shadow: 0 0 6px rgba(249,214,92,0.8);
+      cursor: pointer;
+    }
+
+    #bgm-time {
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      text-align: right;
+    }
+
+    /* 音量 */
+    #bgm-vol-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    #bgm-vol-icon {
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    #bgm-vol {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 70px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.15);
+      outline: none;
+      cursor: pointer;
+    }
+
+    #bgm-vol::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(249,214,92,0.8);
+      cursor: pointer;
+    }
+
+    /* 波形アニメーション（再生中） */
+    #bgm-wave {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 20px;
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    #bgm-wave.active { opacity: 1; }
+
+    #bgm-wave span {
+      display: block;
+      width: 3px;
+      background: #F9D65C;
+      border-radius: 2px;
+      animation: wave 1s ease-in-out infinite;
+    }
+
+    #bgm-wave span:nth-child(1) { height: 8px;  animation-delay: 0s; }
+    #bgm-wave span:nth-child(2) { height: 16px; animation-delay: 0.15s; }
+    #bgm-wave span:nth-child(3) { height: 12px; animation-delay: 0.3s; }
+    #bgm-wave span:nth-child(4) { height: 18px; animation-delay: 0.1s; }
+    #bgm-wave span:nth-child(5) { height: 10px; animation-delay: 0.25s; }
+
+    @keyframes wave {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(0.35); }
+    }
+
+    /* ===== 既存スタイル ===== */
     h1 {
       text-align: center;
       padding: 20px;
@@ -20,6 +205,7 @@
       color: #ffffff;
       text-shadow: 0 0 10px rgba(249,214,92,0.9);
     }
+
     .section-title {
       font-size: 22px;
       margin: 30px 0 10px;
@@ -29,6 +215,7 @@
       text-shadow: 0 0 6px rgba(249,214,92,0.7);
       color: #F9D65C;
     }
+
     .card-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -36,10 +223,21 @@
       padding: 10px 16px 50px;
     }
 
+    .card {
+      position: relative;
+      background: linear-gradient(180deg, #111 0%, #000 100%);
+      border: 1px solid rgba(249,214,92,0.25);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(249,214,92,0.25);
+      transition: transform .25s, box-shadow .25s;
+    }
+
     .card:hover {
       transform: translateY(-8px);
       box-shadow: 0 0 18px rgba(249,214,92,0.5);
     }
+
     .thumb {
       width: 100%;
       height: 160px;
@@ -47,19 +245,23 @@
       background-position: center;
       border-bottom: 1px solid rgba(249,214,92,0.2);
     }
+
     .card-content {
       padding: 12px;
       text-align: left;
     }
+
     .match-title {
       font-size: 17px;
       font-weight: bold;
       margin-bottom: 6px;
     }
+
     .date, .score {
       font-size: 14px;
       opacity: .9;
     }
+
     .badge {
       position: absolute;
       top: 8px;
@@ -71,18 +273,57 @@
       border: 1px solid rgba(0,0,0,0.4);
       text-shadow: 0 0 5px rgba(0,0,0,0.8);
     }
+
     .win {
       background: linear-gradient(135deg, #FFD43B, #E7B700);
       color: #000;
     }
+
     .lose {
       background: linear-gradient(135deg, #D32F2F, #8A0000);
       color: #fff;
     }
+
+    .card-link {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .score-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #000;
+      background: linear-gradient(135deg, #FFD43B, #E7B700);
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(249,214,92,0.6);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: all 0.25s ease;
+      z-index: 2;
+    }
+
+    .card:hover .score-btn {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      .score-btn {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
     .back {
       text-align: center;
       margin: 40px 0;
     }
+
     .back a {
       color: #F9D65C;
       font-size: 18px;
@@ -90,845 +331,626 @@
       font-weight: bold;
       text-shadow: 0 0 6px rgba(249,214,92,0.7);
     }
-    .card {
-  position: relative;
-  background: linear-gradient(180deg, #111 0%, #000 100%);
-  border: 1px solid rgba(249,214,92,0.25);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(249,214,92,0.25);
-  transition: transform .25s, box-shadow .25s;
-}
-
-/* hover演出は card に対して */
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 0 18px rgba(249,214,92,0.5);
-}
-
-/* ★縮小を防ぐ核心部分 */
-.card-link {
-  display: block;          /* inline → block */
-
-  color: inherit;
-  text-decoration: none;
-}
-.score-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: bold;
-  color: #000;
-  background: linear-gradient(135deg, #FFD43B, #E7B700);
-  border-radius: 20px;
-  box-shadow: 0 0 10px rgba(249,214,92,0.6);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: all 0.25s ease;
-  z-index: 2;
-}
-
-/* PC：ホバーで表示 */
-.card:hover .score-btn {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* タッチ端末（スマホ・タブレット）は常に表示 */
-@media (hover: none) and (pointer: coarse) {
-  .score-btn {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-
-
   </style>
 </head>
 
 <body>
 
+  <!-- ===== BGM固定バー ===== -->
+  <div id="bgm-bar">
+    <div id="bgm-wave" class="active">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <button id="bgm-play-btn" title="再生 / 一時停止">▶</button>
+
+    <div id="bgm-info">
+      <div id="bgm-note">🎵</div>
+      <div>
+        <div id="bgm-title">最後の瞬間まで胸を張って</div>
+        <div id="bgm-sub">BGM</div>
+      </div>
+    </div>
+
+    <div id="bgm-seek-wrap">
+      <input type="range" id="bgm-seek" min="0" value="0" step="0.1">
+      <div id="bgm-time">0:00 / 0:00</div>
+    </div>
+
+    <div id="bgm-vol-wrap">
+      <span id="bgm-vol-icon">🔊</span>
+      <input type="range" id="bgm-vol" min="0" max="1" step="0.01" value="0.7">
+    </div>
+  </div>
+
+  <!-- audio要素 -->
+  <audio id="bgm" loop>
+    <source src="最後の瞬間まで胸を張って.mp3" type="audio/mpeg">
+  </audio>
+
   <h1>思い出の動画</h1>
 
-   <!-- KFカップ -->
+  <!-- KFカップ -->
   <div class="section-title">清水町KFカップ：準優勝（6年生ファルコンズ合同チーム）</div>
   <div class="card-container">
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/APcpymSsHAo">
-    <div class="thumb" style="background-image:url('https://img.youtube.com/vi/APcpymSsHAo/maxresdefault.jpg');"></div>
-    <div class="badge win">WIN</div>
-    <div class="card-content">
-      <div class="match-title">vs K4L</div>
-      <div class="date">2026/1/31</div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/APcpymSsHAo">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/APcpymSsHAo/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">vs K4L</div>
+          <div class="date">2026/1/31</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_K4L.pdf" target="_blank">スコア詳細をみる</a>
     </div>
-  </a>
-  <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_K4L.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/ZO5jL24AG6Q">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/ZO5jL24AG6Q/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">vs 勝山</div>
-        <div class="date">2026/1/31</div>
-      </div>
-    </a>
-      <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_katsuyama.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/nadp0f51h6I">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/nadp0f51h6I/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">vs 有度一</div>
-        <div class="date">2026/1/31</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_udoiti.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/Yp2BcvA4eA0">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/Yp2BcvA4eA0/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">vs SBY</div>
-        <div class="date">2026/2/1</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_SBY.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/2SlgMkjmNuU">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/2SlgMkjmNuU/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">vs 富丘</div>
-        <div class="date">2026/2/1</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka2.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-    
-
-  </div>
-  
-  <!-- 最初に表示したいメッセージ -->
-<div class="section-title">公式戦終了後最後のメッセージ</div>
-<div class="card-container">
-
-  <div class="card">
-    <!-- カード全体クリック → YouTube -->
-    <a class="card-link" target="_blank" href="https://youtu.be/RpUdN8YeJUU">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/RpUdN8YeJUU/maxresdefault.jpg');"></div>
-      <div class="card-content">
-        <div class="date">2025/12/7</div>
-      </div>
-    </a>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/ZO5jL24AG6Q">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/ZO5jL24AG6Q/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">vs 勝山</div>
+          <div class="date">2026/1/31</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_katsuyama.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/nadp0f51h6I">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/nadp0f51h6I/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">vs 有度一</div>
+          <div class="date">2026/1/31</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_udoiti.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/Yp2BcvA4eA0">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/Yp2BcvA4eA0/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">vs SBY</div>
+          <div class="date">2026/2/1</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_SBY.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/2SlgMkjmNuU">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/2SlgMkjmNuU/maxresdefault.jpg');"></div>
+        <div class="badge lose">LOSE</div>
+        <div class="card-content">
+          <div class="match-title">vs 富丘</div>
+          <div class="date">2026/2/1</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka2.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
   </div>
 
-</div>
-
+  <!-- 最後のメッセージ -->
+  <div class="section-title">公式戦終了後最後のメッセージ</div>
+  <div class="card-container">
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/RpUdN8YeJUU">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/RpUdN8YeJUU/maxresdefault.jpg');"></div>
+        <div class="card-content">
+          <div class="date">2025/12/7</div>
+        </div>
+      </a>
+    </div>
+  </div>
 
   <!-- 県大会 -->
   <div class="section-title">県大会：7位</div>
   <div class="card-container">
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/SXoaAJayx98">
-    <div class="thumb" style="background-image:url('https://img.youtube.com/vi/SXoaAJayx98/maxresdefault.jpg');"></div>
-    <div class="badge win">WIN</div>
-    <div class="card-content">
-      <div class="match-title">予選 vs 富丘</div>
-      <div class="date">2025/11/23</div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/SXoaAJayx98">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/SXoaAJayx98/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs 富丘</div>
+          <div class="date">2025/11/23</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
     </div>
-  </a>
-  <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/fzv_g7yTxcw">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/fzv_g7yTxcw/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs AMBC</div>
-        <div class="date">2025/11/23</div>
-      </div>
-    </a>
-      <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/UfY-3-BKJL4">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/UfY-3-BKJL4/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝T vs 貴船</div>
-        <div class="date">2025/12/7</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/I8HD4TdJBfc">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/I8HD4TdJBfc/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝敗者復活 vs 北郷成美</div>
-        <div class="date">2025/12/7</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-    
-
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/fzv_g7yTxcw">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/fzv_g7yTxcw/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs AMBC</div>
+          <div class="date">2025/11/23</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/UfY-3-BKJL4">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/UfY-3-BKJL4/maxresdefault.jpg');"></div>
+        <div class="badge lose">LOSE</div>
+        <div class="card-content">
+          <div class="match-title">決勝T vs 貴船</div>
+          <div class="date">2025/12/7</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/I8HD4TdJBfc">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/I8HD4TdJBfc/maxresdefault.jpg');"></div>
+        <div class="badge lose">LOSE</div>
+        <div class="card-content">
+          <div class="match-title">決勝敗者復活 vs 北郷成美</div>
+          <div class="date">2025/12/7</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
   </div>
 
   <!-- 秋季西部大会 -->
   <div class="section-title">秋季西部大会：3位</div>
   <div class="card-container">
     <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/SDEOg-Nh4_A">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/SDEOg-Nh4_A/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 竜洋</div>
-        <div class="date">2025/11/2</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/2KhQsRKtg0o">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/2KhQsRKtg0o/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs トリアス</div>
-        <div class="date">2025/11/2</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/h6OD375VnQU">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/h6OD375VnQU/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 袋井</div>
-        <div class="date">2025/11/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/MVGOsvM5a_M">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/MVGOsvM5a_M/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 芳川北</div>
-        <div class="date">2025/11/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/T8Z4RIZ5Tg0">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/T8Z4RIZ5Tg0/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 舞阪</div>
-        <div class="date">2025/11/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
+      <a class="card-link" target="_blank" href="https://youtu.be/SDEOg-Nh4_A">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/SDEOg-Nh4_A/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs 竜洋</div>
+          <div class="date">2025/11/2</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/2KhQsRKtg0o">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/2KhQsRKtg0o/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs トリアス</div>
+          <div class="date">2025/11/2</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/h6OD375VnQU">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/h6OD375VnQU/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 袋井</div>
+          <div class="date">2025/11/9</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/MVGOsvM5a_M">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/MVGOsvM5a_M/maxresdefault.jpg');"></div>
+        <div class="badge lose">LOSE</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 芳川北</div>
+          <div class="date">2025/11/9</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/T8Z4RIZ5Tg0">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/T8Z4RIZ5Tg0/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 舞阪</div>
+          <div class="date">2025/11/9</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
   </div>
 
   <!-- 秋季大会 -->
   <div class="section-title">秋季大会：優勝</div>
   <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/93k2DcnkKsE">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/93k2DcnkKsE/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 有玉</div>
-        <div class="date">2025/9/21</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-   <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/xpEzPn6VnX0">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/xpEzPn6VnX0/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 浅間</div>
-        <div class="date">2025/9/21</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/zIJzZ1QqRXg">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/zIJzZ1QqRXg/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 与進</div>
-        <div class="date">2025/9/28</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/wuOFb9bF_x8">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/wuOFb9bF_x8/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 相生飯田</div>
-        <div class="date">2025/9/28</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/d31D7I2bl9k">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/d31D7I2bl9k/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 芳川北</div>
-        <div class="date">2025/9/28</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/93k2DcnkKsE">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/93k2DcnkKsE/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs 有玉</div>
+          <div class="date">2025/9/21</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/xpEzPn6VnX0">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/xpEzPn6VnX0/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs 浅間</div>
+          <div class="date">2025/9/21</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/zIJzZ1QqRXg">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/zIJzZ1QqRXg/maxresdefault.jpg');"></div>
+        <div class="badge lose">LOSE</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 与進</div>
+          <div class="date">2025/9/28</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/wuOFb9bF_x8">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/wuOFb9bF_x8/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 相生飯田</div>
+          <div class="date">2025/9/28</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/d31D7I2bl9k">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/d31D7I2bl9k/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 芳川北</div>
+          <div class="date">2025/9/28</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
   </div>
 
   <!-- 県リーグ -->
   <div class="section-title">県リーグ</div>
   <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/3VEuKEW4l9w">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/3VEuKEW4l9w/maxresdefault.jpg');"></div>
-      <div class="card-content">
-        <div class="match-title">vs 有度一</div>
-        <div class="date">2025/7/27</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/8aURWqNsXZU">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/8aURWqNsXZU/maxresdefault.jpg');"></div>
-      <div class="card-content">
-        <div class="match-title">vs SUB6</div>
-        <div class="date">2025/7/27</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/3VEuKEW4l9w">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/3VEuKEW4l9w/maxresdefault.jpg');"></div>
+        <div class="card-content">
+          <div class="match-title">vs 有度一</div>
+          <div class="date">2025/7/27</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/8aURWqNsXZU">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/8aURWqNsXZU/maxresdefault.jpg');"></div>
+        <div class="card-content">
+          <div class="match-title">vs SUB6</div>
+          <div class="date">2025/7/27</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
   </div>
 
   <!-- 春季西部大会 -->
   <div class="section-title">春季西部大会：5位</div>
   <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/QELNUPHW3kE">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/QELNUPHW3kE/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs チャイルド</div>
-        <div class="date">2025/6/15</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/4VFQyDp086U">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/4VFQyDp086U/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs オーシャンズ</div>
-        <div class="date">2025/6/15</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/iv6S1f3mDvc">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/iv6S1f3mDvc/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 袋井</div>
-        <div class="date">2025/6/22</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/Y2z7XJbV0Po">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/Y2z7XJbV0Po/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 相生飯田</div>
-        <div class="date">2025/6/22</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/1bVuXbg5-ew">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/1bVuXbg5-ew/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 与進</div>
-        <div class="date">2025/6/22</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/QELNUPHW3kE">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/QELNUPHW3kE/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs チャイルド</div>
+          <div class="date">2025/6/15</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/4VFQyDp086U">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/4VFQyDp086U/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs オーシャンズ</div>
+          <div class="date">2025/6/15</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/iv6S1f3mDvc">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/iv6S1f3mDvc/maxresdefault.jpg');"></div>
+        <div class="badge lose">LOSE</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 袋井</div>
+          <div class="date">2025/6/22</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/Y2z7XJbV0Po">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/Y2z7XJbV0Po/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 相生飯田</div>
+          <div class="date">2025/6/22</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/1bVuXbg5-ew">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/1bVuXbg5-ew/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 与進</div>
+          <div class="date">2025/6/22</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
   </div>
 
   <!-- 春季大会 -->
   <div class="section-title">春季大会：2位</div>
   <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/5Db8dFUHACw">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/5Db8dFUHACw/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 有玉</div>
-        <div class="date">2025/5/11</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/Zb78A8JG5ZI">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/Zb78A8JG5ZI/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 蒲</div>
-        <div class="date">2025/5/11</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/zwwlqFwrnWk">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/zwwlqFwrnWk/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 芳川北</div>
-        <div class="date">2025/5/18</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/-ffLkkqc8ks">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/-ffLkkqc8ks/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 与進</div>
-        <div class="date">2025/5/18</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/3ws2deRP5qI">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/3ws2deRP5qI/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 相生飯田</div>
-        <div class="date">2025/5/18</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/5Db8dFUHACw">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/5Db8dFUHACw/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs 有玉</div>
+          <div class="date">2025/5/11</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/Zb78A8JG5ZI">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/Zb78A8JG5ZI/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs 蒲</div>
+          <div class="date">2025/5/11</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/zwwlqFwrnWk">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/zwwlqFwrnWk/maxresdefault.jpg');"></div>
+        <div class="badge lose">LOSE</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 芳川北</div>
+          <div class="date">2025/5/18</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/-ffLkkqc8ks">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/-ffLkkqc8ks/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 与進</div>
+          <div class="date">2025/5/18</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/3ws2deRP5qI">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/3ws2deRP5qI/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 相生飯田</div>
+          <div class="date">2025/5/18</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
   </div>
 
   <!-- 新人戦 -->
   <div class="section-title">新人戦：3位</div>
   <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/OVdB086QU44">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/OVdB086QU44/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 浜松北</div>
-        <div class="date">2025/2/2</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/1uBu6Br_yZA">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/1uBu6Br_yZA/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 浜松GD</div>
-        <div class="date">2025/2/2</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/NMpI0tu3BPA">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/NMpI0tu3BPA/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 芳川北</div>
-        <div class="date">2025/2/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/ikdG5kgAJWY">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/ikdG5kgAJWY/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 与進</div>
-        <div class="date">2025/2/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/fQIAHQGJSdE">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/fQIAHQGJSdE/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 相生飯田</div>
-        <div class="date">2025/2/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/OVdB086QU44">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/OVdB086QU44/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs 浜松北</div>
+          <div class="date">2025/2/2</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/1uBu6Br_yZA">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/1uBu6Br_yZA/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs 浜松GD</div>
+          <div class="date">2025/2/2</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/NMpI0tu3BPA">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/NMpI0tu3BPA/maxresdefault.jpg');"></div>
+        <div class="badge lose">LOSE</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 芳川北</div>
+          <div class="date">2025/2/9</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/ikdG5kgAJWY">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/ikdG5kgAJWY/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 与進</div>
+          <div class="date">2025/2/9</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/fQIAHQGJSdE">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/fQIAHQGJSdE/maxresdefault.jpg');"></div>
+        <div class="badge lose">LOSE</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 相生飯田</div>
+          <div class="date">2025/2/9</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
   </div>
 
   <!-- 5年生大会 -->
   <div class="section-title">5年生大会：2位</div>
   <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/l0gtfYwUfeI">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/l0gtfYwUfeI/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 可美</div>
-        <div class="date">2024/12/8</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/RH2n7jQY9Rw">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/RH2n7jQY9Rw/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 浜松東</div>
-        <div class="date">2024/12/8</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/q7ubH70eC80">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/q7ubH70eC80/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 芳川北</div>
-        <div class="date">2024/12/15</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/jOaWMORN2Sw">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/jOaWMORN2Sw/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 与進</div>
-        <div class="date">2024/12/15</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/YUPE1PMfJCw">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/YUPE1PMfJCw/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 相生飯田</div>
-        <div class="date">2024/12/15</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/l0gtfYwUfeI">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/l0gtfYwUfeI/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs 可美</div>
+          <div class="date">2024/12/8</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/RH2n7jQY9Rw">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/RH2n7jQY9Rw/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">予選 vs 浜松東</div>
+          <div class="date">2024/12/8</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/q7ubH70eC80">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/q7ubH70eC80/maxresdefault.jpg');"></div>
+        <div class="badge lose">LOSE</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 芳川北</div>
+          <div class="date">2024/12/15</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/jOaWMORN2Sw">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/jOaWMORN2Sw/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 与進</div>
+          <div class="date">2024/12/15</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
+    <div class="card">
+      <a class="card-link" target="_blank" href="https://youtu.be/YUPE1PMfJCw">
+        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/YUPE1PMfJCw/maxresdefault.jpg');"></div>
+        <div class="badge win">WIN</div>
+        <div class="card-content">
+          <div class="match-title">決勝 vs 相生飯田</div>
+          <div class="date">2024/12/15</div>
+        </div>
+      </a>
+      <a class="score-btn" href="scores/vs_tomioka.pdf" target="_blank">スコア詳細をみる</a>
+    </div>
   </div>
 
   <div class="back"><a href="index.html">← トップページに戻る</a></div>
 
+  <script>
+    const audio = document.getElementById('bgm');
+    const playBtn = document.getElementById('bgm-play-btn');
+    const seek = document.getElementById('bgm-seek');
+    const timeDisplay = document.getElementById('bgm-time');
+    const vol = document.getElementById('bgm-vol');
+    const wave = document.getElementById('bgm-wave');
+    const volIcon = document.getElementById('bgm-vol-icon');
+
+    audio.volume = 0.7;
+
+    // 時間フォーマット
+    function fmt(s) {
+      const m = Math.floor(s / 60);
+      return m + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+    }
+
+    // 再生/一時停止
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        playBtn.textContent = '⏸';
+        playBtn.classList.add('playing');
+        wave.classList.add('active');
+      } else {
+        audio.pause();
+        playBtn.textContent = '▶';
+        playBtn.classList.remove('playing');
+        wave.classList.remove('active');
+      }
+    });
+
+    // シークバー更新
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        seek.value = (audio.currentTime / audio.duration) * 100;
+        timeDisplay.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+      }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      seek.max = 100;
+    });
+
+    // シーク操作
+    seek.addEventListener('input', () => {
+      if (audio.duration) {
+        audio.currentTime = (seek.value / 100) * audio.duration;
+      }
+    });
+
+    // 音量
+    vol.addEventListener('input', () => {
+      audio.volume = vol.value;
+      volIcon.textContent = vol.value == 0 ? '🔇' : vol.value < 0.5 ? '🔉' : '🔊';
+    });
+
+    // シークバーのグラデーション更新
+    function updateSeekGradient() {
+      const pct = seek.value + '%';
+      seek.style.background = `linear-gradient(to right, #F9D65C 0%, #F9D65C ${pct}, rgba(255,255,255,0.15) ${pct})`;
+    }
+    seek.addEventListener('input', updateSeekGradient);
+    audio.addEventListener('timeupdate', updateSeekGradient);
+
+    function updateVolGradient() {
+      const pct = (vol.value * 100) + '%';
+      vol.style.background = `linear-gradient(to right, rgba(249,214,92,0.7) 0%, rgba(249,214,92,0.7) ${pct}, rgba(255,255,255,0.15) ${pct})`;
+    }
+    vol.addEventListener('input', updateVolGradient);
+    updateVolGradient();
+  </script>
 
 </body>
 </html>
-
-
-
-
