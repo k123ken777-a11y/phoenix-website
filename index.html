@@ -7,7 +7,6 @@
 <title>HAMAMATSU PHOENIX BASKETBALL CLUB</title>
 <link rel="manifest" href="/phoenix-website/manifest.json">
 <meta name="theme-color" content="#F9D65C">
-
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -48,6 +47,148 @@
     font-size: 0.8rem;
     color: #aaa;
   }
+
+  /* ===== BGMプレーヤー ===== */
+  #bgm-player {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 32px;
+    padding: 14px 22px;
+    background: linear-gradient(135deg, #111 0%, #1a1500 100%);
+    border: 1px solid rgba(249,214,92,0.4);
+    border-radius: 50px;
+    box-shadow: 0 0 20px rgba(249,214,92,0.15);
+    max-width: 90%;
+  }
+
+  /* 波形 */
+  #bgm-wave {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 18px;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+  }
+  #bgm-wave.active { opacity: 1; }
+  #bgm-wave span {
+    display: block;
+    width: 3px;
+    background: #F9D65C;
+    border-radius: 2px;
+    animation: wv 1s ease-in-out infinite;
+  }
+  #bgm-wave span:nth-child(1){ height:7px;  animation-delay:0s; }
+  #bgm-wave span:nth-child(2){ height:14px; animation-delay:0.15s; }
+  #bgm-wave span:nth-child(3){ height:10px; animation-delay:0.3s; }
+  #bgm-wave span:nth-child(4){ height:16px; animation-delay:0.08s; }
+  #bgm-wave span:nth-child(5){ height:8px;  animation-delay:0.22s; }
+  @keyframes wv {
+    0%,100%{ transform:scaleY(1); }
+    50%{ transform:scaleY(0.3); }
+  }
+
+  /* 再生ボタン */
+  #bgm-play {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid rgba(249,214,92,0.75);
+    background: transparent;
+    color: #F9D65C;
+    font-size: 17px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  #bgm-play:hover {
+    background: rgba(249,214,92,0.15);
+    box-shadow: 0 0 12px rgba(249,214,92,0.5);
+  }
+
+  /* 曲名 */
+  #bgm-label {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 1px;
+  }
+  #bgm-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: #F9D65C;
+    text-shadow: 0 0 6px rgba(249,214,92,0.5);
+    white-space: nowrap;
+  }
+  #bgm-sub {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* シークバー */
+  #bgm-seek {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 120px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.15);
+    outline: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  #bgm-seek::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #F9D65C;
+    box-shadow: 0 0 6px rgba(249,214,92,0.8);
+    cursor: pointer;
+  }
+
+  /* 音量 */
+  #bgm-vol {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 64px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.15);
+    outline: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  #bgm-vol::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(249,214,92,0.8);
+    cursor: pointer;
+  }
+  #bgm-vol-icon {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    cursor: default;
+  }
+
+  /* スマホ：シークと音量を縦に */
+  @media (max-width: 480px) {
+    #bgm-player {
+      flex-wrap: wrap;
+      justify-content: center;
+      border-radius: 20px;
+      gap: 10px;
+      padding: 14px 18px;
+    }
+    #bgm-seek { width: 100%; }
+    #bgm-vol  { width: 80px; }
+  }
 </style>
 </head>
 <body>
@@ -58,29 +199,102 @@
   <section class="main-visual">
     <h1>HAMAMATSU PHOENIX<br>BASKETBALL CLUB</h1>
     <p>2025 HISTORY ALBUM</p>
-
     <div class="slogan">
       One Team, One Family.<br>仲間とともに。
     </div>
 
+    <!-- BGMプレーヤー -->
+    <div id="bgm-player">
+      <div id="bgm-wave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <button id="bgm-play" title="再生 / 一時停止">▶</button>
+
+      <div id="bgm-label">
+        <div id="bgm-title">最後の瞬間まで胸を張って</div>
+        <div id="bgm-sub">BGM</div>
+      </div>
+
+      <input type="range" id="bgm-seek" min="0" max="100" value="0" step="0.1">
+
+      <span id="bgm-vol-icon">🔊</span>
+      <input type="range" id="bgm-vol" min="0" max="1" step="0.01" value="0.7">
+    </div>
+
+    <audio id="bgm" loop>
+      <source src="最後の瞬間まで胸を張って.mp3" type="audio/mpeg">
+    </audio>
+
+    <br>
     <a class="btn" href="videos.html">思い出の動画を見る ▶</a>
   </section>
 
   <footer>
     © 2025 HAMAMATSU PHOENIX BASKETBALL CLUB
   </footer>
+
+  <script>
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/phoenix-website/sw.js')
+        .then(() => console.log('Service Worker登録成功'))
+        .catch(err => console.log('Service Worker登録失敗', err));
+    }
+
+    // BGM
+    const audio   = document.getElementById('bgm');
+    const playBtn = document.getElementById('bgm-play');
+    const seek    = document.getElementById('bgm-seek');
+    const vol     = document.getElementById('bgm-vol');
+    const wave    = document.getElementById('bgm-wave');
+    const volIcon = document.getElementById('bgm-vol-icon');
+
+    audio.volume = 0.7;
+
+    function fmt(s) {
+      return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+    }
+
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        playBtn.textContent = '⏸';
+        wave.classList.add('active');
+      } else {
+        audio.pause();
+        playBtn.textContent = '▶';
+        wave.classList.remove('active');
+      }
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        seek.value = (audio.currentTime / audio.duration) * 100;
+        updateSeekGradient();
+      }
+    });
+
+    seek.addEventListener('input', () => {
+      if (audio.duration) audio.currentTime = (seek.value / 100) * audio.duration;
+      updateSeekGradient();
+    });
+
+    vol.addEventListener('input', () => {
+      audio.volume = vol.value;
+      volIcon.textContent = vol.value == 0 ? '🔇' : vol.value < 0.5 ? '🔉' : '🔊';
+      updateVolGradient();
+    });
+
+    function updateSeekGradient() {
+      const p = seek.value + '%';
+      seek.style.background = `linear-gradient(to right,#F9D65C 0%,#F9D65C ${p},rgba(255,255,255,0.15) ${p})`;
+    }
+    function updateVolGradient() {
+      const p = (vol.value * 100) + '%';
+      vol.style.background = `linear-gradient(to right,rgba(249,214,92,0.7) 0%,rgba(249,214,92,0.7) ${p},rgba(255,255,255,0.15) ${p})`;
+    }
+    updateVolGradient();
+  </script>
 </body>
 </html>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/phoenix-website/sw.js')
-      .then(() => console.log('Service Worker登録成功'))
-      .catch(err => console.log('Service Worker登録失敗', err));
-  }
-</script>
-
-
-
-
-
-
