@@ -1,947 +1,525 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>思い出の動画</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #000;
-      color: #ffffff;
-      margin: 0;
-      padding: 0;
-    }
-    h1 {
-      text-align: center;
-      padding: 20px;
-      font-size: 30px;
-      font-weight: bold;
-      color: #ffffff;
-      text-shadow: 0 0 10px rgba(249,214,92,0.9);
-    }
-    .section-title {
-      font-size: 22px;
-      margin: 30px 0 10px;
-      padding-left: 15px;
-      border-left: 5px solid #F9D65C;
-      font-weight: bold;
-      text-shadow: 0 0 6px rgba(249,214,92,0.7);
-      color: #F9D65C;
-    }
-    .card-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 18px;
-      padding: 10px 16px 50px;
-    }
-
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 18px rgba(249,214,92,0.5);
-    }
-    .thumb {
-      width: 100%;
-      height: 160px;
-      background-size: cover;
-      background-position: center;
-      border-bottom: 1px solid rgba(249,214,92,0.2);
-    }
-    .card-content {
-      padding: 12px;
-      text-align: left;
-    }
-    .match-title {
-      font-size: 17px;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-    .date, .score {
-      font-size: 14px;
-      opacity: .9;
-    }
-    .badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: bold;
-      border-radius: 10px;
-      border: 1px solid rgba(0,0,0,0.4);
-      text-shadow: 0 0 5px rgba(0,0,0,0.8);
-    }
-    .win {
-      background: linear-gradient(135deg, #FFD43B, #E7B700);
-      color: #000;
-    }
-    .lose {
-      background: linear-gradient(135deg, #D32F2F, #8A0000);
-      color: #fff;
-    }
-    .back {
-      text-align: center;
-      margin: 40px 0;
-    }
-    .back a {
-      color: #F9D65C;
-      font-size: 18px;
-      text-decoration: none;
-      font-weight: bold;
-      text-shadow: 0 0 6px rgba(249,214,92,0.7);
-    }
-    .card {
-  position: relative;
-  background: linear-gradient(180deg, #111 0%, #000 100%);
-  border: 1px solid rgba(249,214,92,0.25);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(249,214,92,0.25);
-  transition: transform .25s, box-shadow .25s;
-}
-
-/* hover演出は card に対して */
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 0 18px rgba(249,214,92,0.5);
-}
-
-/* ★縮小を防ぐ核心部分 */
-.card-link {
-  display: block;          /* inline → block */
-
-  color: inherit;
-  text-decoration: none;
-}
-.score-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: bold;
-  color: #000;
-  background: linear-gradient(135deg, #FFD43B, #E7B700);
-  border-radius: 20px;
-  box-shadow: 0 0 10px rgba(249,214,92,0.6);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: all 0.25s ease;
-  z-index: 2;
-}
-
-/* PC：ホバーで表示 */
-.card:hover .score-btn {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* タッチ端末（スマホ・タブレット）は常に表示 */
-@media (hover: none) and (pointer: coarse) {
-  .score-btn {
-    opacity: 1;
-    transform: none;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow">
+<title>MY ANTHEM — HAMAMATSU PHOENIX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F9D65C;
+    --bg: #000;
+    --card: #0a0a0a;
+    --border: rgba(249,214,92,0.2);
   }
-}
 
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
 
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% -10%, rgba(249,214,92,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 90% 90%, rgba(229,9,20,0.05) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+    width: 1px; height: 100%;
+    background: linear-gradient(180deg, transparent 0%, rgba(249,214,92,0.04) 30%, rgba(249,214,92,0.04) 70%, transparent 100%);
+    pointer-events: none; z-index: 0;
+  }
 
-  </style>
+  /* ── HEADER ── */
+  header {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding: 48px 20px 36px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #0d0d0d 0%, #000 100%);
+  }
+  .header-eyebrow {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem; letter-spacing: 0.35em;
+    color: rgba(249,214,92,0.5); margin-bottom: 10px;
+  }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 10vw, 5.5rem);
+    letter-spacing: 0.08em; line-height: 0.9;
+    color: var(--gold);
+    text-shadow: 0 0 40px rgba(249,214,92,0.4), 0 0 80px rgba(249,214,92,0.15);
+    animation: fadeDown 0.8s ease both;
+  }
+  header h1 span {
+    display: block; font-size: 0.38em;
+    letter-spacing: 0.28em; color: rgba(255,255,255,0.55);
+    text-shadow: none; margin-top: 6px;
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .back-link {
+    position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+    font-size: 0.75rem; color: rgba(249,214,92,0.5);
+    text-decoration: none; letter-spacing: 0.1em;
+    display: flex; align-items: center; gap: 6px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--gold); }
+
+  /* ── MAIN ── */
+  main {
+    position: relative; z-index: 1;
+    max-width: 760px; margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px;
+  }
+  .section-label span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.8rem; letter-spacing: 0.25em;
+    color: rgba(249,214,92,0.55); white-space: nowrap;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(249,214,92,0.25), transparent);
+  }
+  .section-gap { margin-top: 44px; }
+
+  /* ── TRACK CARD ── */
+  .track-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px 16px;
+    margin-bottom: 12px;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+    animation: fadeUp 0.5s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+  .track-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--gold), rgba(249,214,92,0.2));
+    opacity: 0; transition: opacity 0.25s;
+    border-radius: 3px 0 0 3px;
+  }
+  .track-card.playing,
+  .track-card:hover {
+    border-color: rgba(249,214,92,0.55);
+    box-shadow: 0 0 24px rgba(249,214,92,0.1), 0 4px 20px rgba(0,0,0,0.5);
+    transform: translateX(4px);
+  }
+  .track-card.playing::before,
+  .track-card:hover::before { opacity: 1; }
+  .track-card.playing { background: linear-gradient(135deg, #0d0d0d 0%, #130f00 100%); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 上段 */
+  .card-top {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .track-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem; color: rgba(249,214,92,0.35);
+    width: 30px; text-align: center; flex-shrink: 0;
+    transition: color 0.2s;
+  }
+  .track-card.playing .track-num,
+  .track-card:hover .track-num { color: var(--gold); }
+
+  .play-btn {
+    flex-shrink: 0; width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(249,214,92,0.5);
+    background: transparent; color: var(--gold);
+    font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; padding-left: 2px;
+  }
+  .play-btn:hover,
+  .track-card.playing .play-btn {
+    background: rgba(249,214,92,0.15);
+    border-color: var(--gold);
+    box-shadow: 0 0 14px rgba(249,214,92,0.4);
+  }
+
+  .track-info { flex: 1; min-width: 0; }
+  .track-name {
+    font-size: 1rem; font-weight: 700; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    letter-spacing: 0.03em; transition: color 0.2s;
+  }
+  .track-sub {
+    font-size: 0.72rem; color: rgba(255,255,255,0.3);
+    margin-top: 2px; letter-spacing: 0.07em;
+  }
+  .track-card.playing .track-name { color: var(--gold); }
+
+  /* 波形 */
+  .wave {
+    display: flex; align-items: flex-end; gap: 2px;
+    height: 16px; opacity: 0; flex-shrink: 0;
+    transition: opacity 0.2s;
+  }
+  .track-card.playing .wave { opacity: 1; }
+  .wave span {
+    display: block; width: 3px;
+    background: var(--gold); border-radius: 2px;
+    animation: wv 0.9s ease-in-out infinite;
+  }
+  .wave span:nth-child(1){ height:6px;  animation-delay:0s; }
+  .wave span:nth-child(2){ height:13px; animation-delay:0.13s; }
+  .wave span:nth-child(3){ height:9px;  animation-delay:0.27s; }
+  .wave span:nth-child(4){ height:15px; animation-delay:0.06s; }
+  .wave span:nth-child(5){ height:7px;  animation-delay:0.2s; }
+  @keyframes wv {
+    0%,100%{ transform:scaleY(1); }
+    50%{ transform:scaleY(0.25); }
+  }
+
+  /* ── タイムバー（カード内下段） ── */
+  .card-bottom {
+    display: flex; align-items: center; gap: 10px;
+    padding-left: calc(30px + 14px + 44px + 14px);
+    /* track-num幅 + gap + btn幅 + gap */
+  }
+
+  .time-current {
+    font-size: 0.68rem; color: rgba(249,214,92,0.75);
+    letter-spacing: 0.04em; width: 32px; flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .time-total {
+    font-size: 0.68rem; color: rgba(255,255,255,0.25);
+    letter-spacing: 0.04em; width: 32px; flex-shrink: 0;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .seek-bar {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 4px; border-radius: 2px;
+    background: rgba(255,255,255,0.1);
+    outline: none; cursor: pointer;
+    transition: height 0.15s;
+  }
+  .seek-bar:hover { height: 6px; }
+  .seek-bar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 6px rgba(249,214,92,0.8);
+    cursor: pointer;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .track-card.playing .seek-bar::-webkit-slider-thumb,
+  .seek-bar:hover::-webkit-slider-thumb { opacity: 1; }
+
+  /* ── チームソング特別スタイル ── */
+  .team-card {
+    background: linear-gradient(135deg, #0d0d0d 0%, #1a1200 60%, #0d0d0d 100%);
+    border: 1px solid rgba(249,214,92,0.45);
+    box-shadow: 0 0 30px rgba(249,214,92,0.08), 0 4px 32px rgba(0,0,0,0.6);
+  }
+  .team-card .track-num { color: var(--gold); font-size: 1.3rem; }
+  .team-card .track-name {
+    font-size: 1.1rem; color: var(--gold);
+    text-shadow: 0 0 8px rgba(249,214,92,0.4);
+  }
+  .team-card .play-btn {
+    width: 50px; height: 50px;
+    border-color: var(--gold);
+    box-shadow: 0 0 14px rgba(249,214,92,0.3);
+    font-size: 17px;
+  }
+  .team-card .card-bottom {
+    padding-left: calc(30px + 14px + 50px + 14px);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 20px;
+    font-size: 0.72rem; color: rgba(255,255,255,0.2);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    letter-spacing: 0.1em;
+  }
+
+  @media (max-width: 480px) {
+    .track-card { padding: 14px 14px 14px; }
+    .card-top { gap: 10px; }
+    .play-btn { width: 38px; height: 38px; font-size: 13px; }
+    .card-bottom { padding-left: calc(30px + 10px + 38px + 10px); }
+    .team-card .play-btn { width: 44px; height: 44px; }
+    .team-card .card-bottom { padding-left: calc(30px + 10px + 44px + 10px); }
+    .back-link span { display: none; }
+  }
+</style>
 </head>
-
 <body>
 
-  <h1>思い出の動画</h1>
+<header>
+  <a class="back-link" href="index.html">← <span>BACK</span></a>
+  <div class="header-eyebrow">HAMAMATSU PHOENIX BASKETBALL CLUB</div>
+  <h1>MY ANTHEM<span>2025 Player Theme Songs</span></h1>
+</header>
 
-  <!-- 卒団式 -->
-  <div class="section-title">2025年度 卒団式</div>
-  <div class="card-container">
+<main>
 
-    <div class="card">
-      <a class="card-link" target="_blank" href="https://youtu.be/5gXQbHcll1Y">
-        <div class="thumb" style="background-image:url('https://img.youtube.com/vi/5gXQbHcll1Y/maxresdefault.jpg');"></div>
-        <div class="card-content">
-          <div class="match-title">2025年度 卒団式</div>
-        </div>
-      </a>
+  <!-- TEAM -->
+  <div class="section-label"><span>TEAM</span></div>
+
+  <div class="track-card team-card" data-src="7つのひかり.mp3">
+    <div class="card-top">
+      <div class="track-num">★</div>
+      <button class="play-btn" aria-label="再生">▶</button>
+      <div class="track-info">
+        <div class="track-name">7つのひかり</div>
+        <div class="track-sub">HAMAMATSU PHOENIX — All Members</div>
+      </div>
+      <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
-
-  </div>
-
-   <!-- KFカップ -->
-  <div class="section-title">清水町KFカップ：準優勝（6年生ファルコンズ合同チーム）</div>
-  <div class="card-container">
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/APcpymSsHAo">
-    <div class="thumb" style="background-image:url('https://img.youtube.com/vi/APcpymSsHAo/maxresdefault.jpg');"></div>
-    <div class="badge win">WIN</div>
-    <div class="card-content">
-      <div class="match-title">vs K4L</div>
-      <div class="date">2026/1/31</div>
+    <div class="card-bottom">
+      <div class="time-current">0:00</div>
+      <input type="range" class="seek-bar" min="0" max="100" value="0" step="0.1">
+      <div class="time-total">0:00</div>
     </div>
-  </a>
-  <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/vs_K4L.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/ZO5jL24AG6Q">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/ZO5jL24AG6Q/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">vs 勝山</div>
-        <div class="date">2026/1/31</div>
-      </div>
-    </a>
-      <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/vs_katsuyama.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/nadp0f51h6I">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/nadp0f51h6I/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">vs 有度一</div>
-        <div class="date">2026/1/31</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/vs_udoiti.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/Yp2BcvA4eA0">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/Yp2BcvA4eA0/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">vs SBY</div>
-        <div class="date">2026/2/1</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/vs_SBY.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/2SlgMkjmNuU">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/2SlgMkjmNuU/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">vs 富丘</div>
-        <div class="date">2026/2/1</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/vs_tomioka2.pdf" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-    
-
-  </div>
-  
-  <!-- 最初に表示したいメッセージ -->
-<div class="section-title">涙のラストミーティング</div>
-<div class="card-container">
-
-  <div class="card">
-    <!-- カード全体クリック → YouTube -->
-    <a class="card-link" target="_blank" href="https://youtu.be/RpUdN8YeJUU">
-      <div class="thumb"
-           style="background-image:url('https://img.youtube.com/vi/RpUdN8YeJUU/maxresdefault.jpg');">
-      </div>
-
-      <div class="card-content">
-        <div class="date">2025/12/7</div>
-      </div>
-    </a>
   </div>
 
-</div>
+  <!-- PLAYERS -->
+  <div class="section-label section-gap"><span>PLAYERS</span></div>
 
-
-  <!-- 県大会 -->
-  <div class="section-title">県大会：7位</div>
-  <div class="card-container">
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/SXoaAJayx98">
-    <div class="thumb" style="background-image:url('https://img.youtube.com/vi/SXoaAJayx98/maxresdefault.jpg');"></div>
-    <div class="badge win">WIN</div>
-    <div class="card-content">
-      <div class="match-title">予選 vs 富丘</div>
-      <div class="date">2025/11/23</div>
+  <!-- #4 -->
+  <div class="track-card" data-src="あきこのうた.mp3">
+    <div class="card-top">
+      <div class="track-num">#4</div>
+      <button class="play-btn" aria-label="再生">▶</button>
+      <div class="track-info">
+        <div class="track-name">Akiko Takeda</div>
+        <div class="track-sub">#4</div>
+      </div>
+      <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
-  </a>
-  <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0036_秋季県予選vs富丘.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/fzv_g7yTxcw">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/fzv_g7yTxcw/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs AMBC</div>
-        <div class="date">2025/11/23</div>
-      </div>
-    </a>
-      <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0037_秋季県予選vsAMBC.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/UfY-3-BKJL4">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/UfY-3-BKJL4/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝T vs 貴船</div>
-        <div class="date">2025/12/7</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0038_秋季県決勝vs貴船.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-<div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/I8HD4TdJBfc">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/I8HD4TdJBfc/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝敗者復活 vs 北郷成美</div>
-        <div class="date">2025/12/7</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0039_秋季県決勝vs北郷成美.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-    
-
+    <div class="card-bottom">
+      <div class="time-current">0:00</div>
+      <input type="range" class="seek-bar" min="0" max="100" value="0" step="0.1">
+      <div class="time-total">0:00</div>
+    </div>
   </div>
 
-  <!-- 秋季西部大会 -->
-  <div class="section-title">秋季西部大会：3位</div>
-  <div class="card-container">
-    <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/SDEOg-Nh4_A">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/SDEOg-Nh4_A/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 竜洋</div>
-        <div class="date">2025/11/2</div>
+  <!-- #5 -->
+  <div class="track-card" data-src="ういのうた.mp3">
+    <div class="card-top">
+      <div class="track-num">#5</div>
+      <button class="play-btn" aria-label="再生">▶</button>
+      <div class="track-info">
+        <div class="track-name">Ui Hoshino</div>
+        <div class="track-sub">#5</div>
       </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0031_秋季西部予選vs竜洋.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/2KhQsRKtg0o">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/2KhQsRKtg0o/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs トリアス</div>
-        <div class="date">2025/11/2</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0032_秋季西部予選vsトリアス.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/h6OD375VnQU">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/h6OD375VnQU/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 袋井</div>
-        <div class="date">2025/11/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0033_秋季西部決勝vs袋井.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/MVGOsvM5a_M">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/MVGOsvM5a_M/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 芳川北</div>
-        <div class="date">2025/11/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0034_秋季西部決勝vs芳川北.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/T8Z4RIZ5Tg0">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/T8Z4RIZ5Tg0/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 舞阪</div>
-        <div class="date">2025/11/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0035_秋季西部決勝vs舞阪.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
+      <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="card-bottom">
+      <div class="time-current">0:00</div>
+      <input type="range" class="seek-bar" min="0" max="100" value="0" step="0.1">
+      <div class="time-total">0:00</div>
+    </div>
   </div>
 
-  <!-- 秋季大会 -->
-  <div class="section-title">秋季大会：優勝</div>
-  <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/93k2DcnkKsE">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/93k2DcnkKsE/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 有玉</div>
-        <div class="date">2025/9/21</div>
+  <!-- #7 -->
+  <div class="track-card" data-src="みりはのうた.mp3">
+    <div class="card-top">
+      <div class="track-num">#7</div>
+      <button class="play-btn" aria-label="rear生">▶</button>
+      <div class="track-info">
+        <div class="track-name">Miriha Kishita</div>
+        <div class="track-sub">#7</div>
       </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0026_秋季大会予選vs有玉.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-   <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/xpEzPn6VnX0">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/xpEzPn6VnX0/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 浅間</div>
-        <div class="date">2025/9/21</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0027_秋季大会予選vs浅間.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/zIJzZ1QqRXg">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/zIJzZ1QqRXg/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 与進</div>
-        <div class="date">2025/9/28</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0028_秋季大会決勝vs与進.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/wuOFb9bF_x8">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/wuOFb9bF_x8/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 相生飯田</div>
-        <div class="date">2025/9/28</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0029_秋季大会決勝vs相生飯田.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/d31D7I2bl9k">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/d31D7I2bl9k/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 芳川北</div>
-        <div class="date">2025/9/28</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0030_秋季大会決勝vs芳川北.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+      <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="card-bottom">
+      <div class="time-current">0:00</div>
+      <input type="range" class="seek-bar" min="0" max="100" value="0" step="0.1">
+      <div class="time-total">0:00</div>
+    </div>
   </div>
 
-  <!-- 県リーグ -->
-  <div class="section-title">県リーグ</div>
-  <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/3VEuKEW4l9w">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/3VEuKEW4l9w/maxresdefault.jpg');"></div>
-      <div class="card-content">
-        <div class="match-title">vs 有度一</div>
-        <div class="date">2025/7/27</div>
+  <!-- #8 -->
+  <div class="track-card" data-src="あんのうた.mp3">
+    <div class="card-top">
+      <div class="track-num">#8</div>
+      <button class="play-btn" aria-label="再生">▶</button>
+      <div class="track-info">
+        <div class="track-name">An Ito</div>
+        <div class="track-sub">#8</div>
       </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0024_春季県リーグvs有度一.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/8aURWqNsXZU">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/8aURWqNsXZU/maxresdefault.jpg');"></div>
-      <div class="card-content">
-        <div class="match-title">vs SUB6</div>
-        <div class="date">2025/7/27</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0025_春季県リーグvsSUB6.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+      <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="card-bottom">
+      <div class="time-current">0:00</div>
+      <input type="range" class="seek-bar" min="0" max="100" value="0" step="0.1">
+      <div class="time-total">0:00</div>
+    </div>
   </div>
 
-  <!-- 春季西部大会 -->
-  <div class="section-title">春季西部大会：5位</div>
-  <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/QELNUPHW3kE">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/QELNUPHW3kE/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs チャイルド</div>
-        <div class="date">2025/6/15</div>
+  <!-- #9 -->
+  <div class="track-card" data-src="るいのうた.mp3">
+    <div class="card-top">
+      <div class="track-num">#9</div>
+      <button class="play-btn" aria-label="再生">▶</button>
+      <div class="track-info">
+        <div class="track-name">Rui Kadoya</div>
+        <div class="track-sub">#9</div>
       </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0019_春季西部予選vsチャイルド.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/4VFQyDp086U">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/4VFQyDp086U/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs オーシャンズ</div>
-        <div class="date">2025/6/15</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0020_春季西部予選vsオーシャンズ.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/iv6S1f3mDvc">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/iv6S1f3mDvc/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 袋井</div>
-        <div class="date">2025/6/22</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0021_春季西部決勝vs袋井.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/Y2z7XJbV0Po">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/Y2z7XJbV0Po/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 相生飯田</div>
-        <div class="date">2025/6/22</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0023_春季西部決勝vs相生飯田.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/1bVuXbg5-ew">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/1bVuXbg5-ew/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 与進</div>
-        <div class="date">2025/6/22</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0022_春季西部決勝vs与進.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+      <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="card-bottom">
+      <div class="time-current">0:00</div>
+      <input type="range" class="seek-bar" min="0" max="100" value="0" step="0.1">
+      <div class="time-total">0:00</div>
+    </div>
   </div>
 
-  <!-- 春季大会 -->
-  <div class="section-title">春季大会：2位</div>
-  <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/5Db8dFUHACw">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/5Db8dFUHACw/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 有玉</div>
-        <div class="date">2025/5/11</div>
+  <!-- #10 -->
+  <div class="track-card" data-src="りかのうた.mp3">
+    <div class="card-top">
+      <div class="track-num">#10</div>
+      <button class="play-btn" aria-label="再生">▶</button>
+      <div class="track-info">
+        <div class="track-name">Rika Sakaue</div>
+        <div class="track-sub">#10</div>
       </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0014_春季大会予選vs有玉.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/Zb78A8JG5ZI">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/Zb78A8JG5ZI/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 蒲</div>
-        <div class="date">2025/5/11</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0015_春季大会予選vs蒲.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/zwwlqFwrnWk">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/zwwlqFwrnWk/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 芳川北</div>
-        <div class="date">2025/5/18</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0017_春季大会決勝vs芳川北.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/-ffLkkqc8ks">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/-ffLkkqc8ks/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 与進</div>
-        <div class="date">2025/5/18</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0018_春季大会決勝vs与進.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/3ws2deRP5qI">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/3ws2deRP5qI/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 相生飯田</div>
-        <div class="date">2025/5/18</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0016_春季大会決勝vs相生飯田.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+      <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="card-bottom">
+      <div class="time-current">0:00</div>
+      <input type="range" class="seek-bar" min="0" max="100" value="0" step="0.1">
+      <div class="time-total">0:00</div>
+    </div>
   </div>
 
-  <!-- 新人戦 -->
-  <div class="section-title">新人戦：3位</div>
-  <div class="card-container">
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/OVdB086QU44">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/OVdB086QU44/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 浜松北</div>
-        <div class="date">2025/2/2</div>
+  <!-- #11 -->
+  <div class="track-card" data-src="のあのうた.mp3">
+    <div class="card-top">
+      <div class="track-num">#11</div>
+      <button class="play-btn" aria-label="再生">▶</button>
+      <div class="track-info">
+        <div class="track-name">Noa Suzuki</div>
+        <div class="track-sub">#11</div>
       </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0009_新人戦予選vs浜松北.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/1uBu6Br_yZA">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/1uBu6Br_yZA/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 浜松GD</div>
-        <div class="date">2025/2/2</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0010_新人戦予選vs浜松GD.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/NMpI0tu3BPA">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/NMpI0tu3BPA/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 芳川北</div>
-        <div class="date">2025/2/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0013_新人戦決勝vs芳川北.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/ikdG5kgAJWY">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/ikdG5kgAJWY/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 与進</div>
-        <div class="date">2025/2/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0011_新人戦決勝vs与進.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/fQIAHQGJSdE">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/fQIAHQGJSdE/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 相生飯田</div>
-        <div class="date">2025/2/9</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0012_新人戦決勝vs相生飯田.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
-
-</div>
-
+      <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="card-bottom">
+      <div class="time-current">0:00</div>
+      <input type="range" class="seek-bar" min="0" max="100" value="0" step="0.1">
+      <div class="time-total">0:00</div>
+    </div>
   </div>
 
-  <!-- 5年生大会 -->
-  <div class="section-title">5年生大会：2位</div>
-  <div class="card-container">
+</main>
 
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/l0gtfYwUfeI">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/l0gtfYwUfeI/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 可美</div>
-        <div class="date">2024/12/8</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0002_5年生大会予選vs可美.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
+<footer>© 2025 HAMAMATSU PHOENIX BASKETBALL CLUB</footer>
+<audio id="global-audio"></audio>
 
-</div>
+<script>
+  const audio = document.getElementById('global-audio');
+  audio.volume = 0.8;
 
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/RH2n7jQY9Rw">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/RH2n7jQY9Rw/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">予選 vs 浜松東</div>
-        <div class="date">2024/12/8</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0001_5年生大会予選vs浜松東.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
+  let currentCard = null;
 
-</div>
+  function fmt(s) {
+    if (!s || isNaN(s)) return '0:00';
+    return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+  }
 
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/q7ubH70eC80">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/q7ubH70eC80/maxresdefault.jpg');"></div>
-      <div class="badge lose">LOSE</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 芳川北</div>
-        <div class="date">2024/12/15</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0004_5年生大会決勝vs芳川北.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
+  function updateBar(card, pct) {
+    const bar = card.querySelector('.seek-bar');
+    bar.value = pct;
+    bar.style.background =
+      `linear-gradient(to right, #F9D65C 0%, #F9D65C ${pct}%, rgba(255,255,255,0.1) ${pct}%)`;
+  }
 
-</div>
+  function stopAll() {
+    if (!currentCard) return;
+    currentCard.classList.remove('playing');
+    currentCard.querySelector('.play-btn').textContent = '▶';
+    currentCard.querySelector('.play-btn').style.paddingLeft = '2px';
+    updateBar(currentCard, 0);
+    currentCard.querySelector('.time-current').textContent = '0:00';
+    audio.pause();
+    currentCard = null;
+  }
 
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/jOaWMORN2Sw">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/jOaWMORN2Sw/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 与進</div>
-        <div class="date">2024/12/15</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0003_5年生大会決勝vs与進.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
+  document.querySelectorAll('.track-card').forEach(card => {
+    const btn     = card.querySelector('.play-btn');
+    const seekBar = card.querySelector('.seek-bar');
 
-</div>
+    btn.addEventListener('click', () => {
+      const isPlaying = card.classList.contains('playing');
+      stopAll();
+      if (!isPlaying) {
+        audio.src = card.dataset.src;
+        audio.play().catch(() => {});
+        card.classList.add('playing');
+        btn.textContent = '⏸';
+        btn.style.paddingLeft = '0';
+        currentCard = card;
+        updateBar(card, 0);
+        card.querySelector('.time-current').textContent = '0:00';
+        card.querySelector('.time-total').textContent   = '0:00';
+      }
+    });
 
-  <div class="card">
-  <!-- カード全体クリック → YouTube -->
-  <a class="card-link" target="_blank" href="https://youtu.be/YUPE1PMfJCw">
-      <div class="thumb" style="background-image:url('https://img.youtube.com/vi/YUPE1PMfJCw/maxresdefault.jpg');"></div>
-      <div class="badge win">WIN</div>
-      <div class="card-content">
-        <div class="match-title">決勝 vs 相生飯田</div>
-        <div class="date">2024/12/15</div>
-      </div>
-    </a>
-     <!-- スコア詳細ボタン → PDF / 画像 -->
-  <a class="score-btn" href="https://k123ken777-a11y.github.io/phoenix-website/scores/0005_5年生大会決勝vs相生飯田.jpg" target="_blank">
-    スコア詳細をみる
-  </a>
+    seekBar.addEventListener('input', () => {
+      if (audio.duration && currentCard === card) {
+        audio.currentTime = (seekBar.value / 100) * audio.duration;
+        updateBar(card, seekBar.value);
+        card.querySelector('.time-current').textContent = fmt(audio.currentTime);
+      }
+    });
 
-</div>
+    // 初期グラデ
+    seekBar.style.background = 'rgba(255,255,255,0.1)';
+  });
 
-  </div>
+  audio.addEventListener('loadedmetadata', () => {
+    if (currentCard) {
+      currentCard.querySelector('.time-total').textContent = fmt(audio.duration);
+    }
+  });
 
-  <div class="back"><a href="index.html">← トップページに戻る</a></div>
+  audio.addEventListener('timeupdate', () => {
+    if (!currentCard || !audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    updateBar(currentCard, pct);
+    currentCard.querySelector('.time-current').textContent = fmt(audio.currentTime);
+  });
 
+  audio.addEventListener('ended', stopAll);
+</script>
 </body>
 </html>
